@@ -15,6 +15,8 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QStyleFactory>
+#include <QCryptographicHash>
+#include <ctime>
 
 void ChatDialog::setNickname(){
 newNick = new QLabel();
@@ -65,10 +67,10 @@ void ChatDialog::genTokenAction(){
     QString token;
 
     QString secWord;
-    srand(time(NULL));
+    qsrand(time(NULL));
     for(int i = 0; i < 10; i++){
 
-        secWord.append(rand() % 'a'+26);
+        secWord.append(qrand() % 'a'+26);
     }
 
     QByteArray cryptBa = secWord.toUtf8();
@@ -336,7 +338,7 @@ void ChatDialog::on_pushButton_3_clicked()
     client.peerManager->binder();
 
     for(int i = 0; i < 101; i++){
-        _sleep(100);
+
     progressBar->setValue(i);
     }
 
@@ -365,7 +367,7 @@ void ChatDialog::copy_connect_withSec(){
     client.peerManager->binder();
 
     for(int i = 0; i < 101; i++){
-        _sleep(100);
+
     progressBar->setValue(i);
     }
 

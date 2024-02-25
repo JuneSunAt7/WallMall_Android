@@ -53,8 +53,7 @@
 
 #include "ui_chatdialog.h"
 #include "client.h"
-#include <QtWebEngineWidgets/QWebEngineView>
-#include <QtWebEngineWidgets/QWebEnginePage>
+#include <QComboBox>
 
 class ChatDialog : public QDialog, private Ui::ChatDialog
 {
@@ -79,7 +78,6 @@ private slots:
     void newParticipant(const QString &nick);
     void participantLeft(const QString &nick);
 
-    void on_pushButton_4_clicked();
 
     void on_lineEdit_returnPressed();
 
@@ -111,7 +109,6 @@ private:
     Client client;
     QString myNickName;
     QTextTableFormat tableFormat;
-    QWebEngineView *view;
     QFile *history;
 
 };

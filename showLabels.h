@@ -2,8 +2,6 @@
 #define SHOWLABELS_H
 #include "ui_chatdialog.h"
 #include "client.h"
-#include <QtWebEngineWidgets/QWebEngineView>
-#include <QtWebEngineWidgets/QWebEnginePage>
 
 class Labels:public QLabel, private Ui::ChatDialog
 {

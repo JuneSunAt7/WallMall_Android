@@ -114,7 +114,6 @@ void Client::newConnection(Connection *connection)
 {
     connection->setGreetingMessage(peerManager->userName());
 
-    connect(connection, &Connection::errorOccurred, this, &Client::connectionError);
     connect(connection, &Connection::disconnected, this, &Client::disconnected);
     connect(connection, &Connection::readyForUse, this, &Client::readyForUse);
 }

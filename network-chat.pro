@@ -1,13 +1,11 @@
 HEADERS       = chatdialog.h \
                 client.h \
                 connection.h \
-                crypttraffic.h \
                 peermanager.h \
                 server.h
 SOURCES       = chatdialog.cpp \
                 client.cpp \
                 connection.cpp \
-                crypttraffic.cpp \
                 features_march.cpp \
                 features_ver2.cpp \
                 main.cpp \
@@ -16,22 +14,39 @@ SOURCES       = chatdialog.cpp \
 FORMS         = chatdialog.ui
 QT           += network widgets
 
-QT += webenginewidgets
 QT += network
+
 DEFINES += QT_DEPRECATED_WARNINGS
-LIBS += -LD:/Programs/OpenSSL-Win64/lib -llibcrypto
-LIBS += -LD:/Programs/OpenSSL-Win64/lib -llibssl
+
 requires(qtConfig(udpsocket))
 requires(qtConfig(listwidget))
 
 # install
-target.path = $$[QT_INSTALL_EXAMPLES]/network/network-chat
-INSTALLS += target
-win32: RC_ICONS = $$PWD/mainicon.ico
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
+
+contains(ANDROID_TARGET_ARCH,arm64-v8a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}
+
+RESOURCES += \
+    res.qrc
 
 
-INCLUDEPATH += \
-     D:/Programs/OpenSSL-Win64/include
-     D:/Programs/CryptFileDevice/src
+
+
+
+
 
 

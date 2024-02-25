@@ -49,8 +49,7 @@
 ****************************************************************************/
 
 #include <QtWidgets>
-#include <QtWebEngineWidgets/QWebEngineView>
-#include <QtWebEngineWidgets/QWebEnginePage>
+
 #include "chatdialog.h"
 #include <QDate>
 // TODO review code
@@ -118,9 +117,6 @@ ChatDialog::ChatDialog(QWidget *parent)
     connect(chNickAction, &QAction::triggered, this, &ChatDialog::setNickname);
     chNickAction->setIcon(QIcon("icons/nickIcon.png"));
 
-    QAction *browser = settingsMenu->addAction(tr("Search"));
-    connect(browser, &QAction::triggered, this, &ChatDialog::on_pushButton_4_clicked);
-    browser->setIcon(QIcon("icons/iconsearch.png"));
 
     QAction *connectPriUser = connectionMenu->addAction(tr("Connect with private token"));
     connectPriUser->setIcon(QIcon("icons/priConnect.png"));
@@ -151,10 +147,12 @@ ChatDialog::ChatDialog(QWidget *parent)
     cursor.setCharFormat( format );
 
 
-    appendMessage(" ", "                                                                                           Today");
 
 ready();
 lineEdit->setPlaceholderText("   Message...");
+
+    QIcon sendIcon(":/res/drawable/airplane.png");
+    sendMess->setIcon(sendIcon);
 
 }
 void ChatDialog::ready(){
@@ -174,6 +172,7 @@ void ChatDialog::ready(){
         return;
    }
 }
+
 void ChatDialog::appendMessage(const QString &from, const QString &message)
 {
 
@@ -191,11 +190,16 @@ void ChatDialog::appendMessage(const QString &from, const QString &message)
     if (from == myNickName){
 
         QColor myMess(106, 33, 131);
+        QColor unameColor(205, 203, 223);
 
 
         QTextCharFormat nickFormat;
-        nickFormat.setForeground(Qt::white);
-        nickFormat.setFontWeight(QFont::Bold);
+        nickFormat.setForeground(unameColor);
+
+
+        QTextCharFormat msgFormat;
+        msgFormat.setForeground(Qt::white);
+
 
         QTextCursor cursor(textEdit->textCursor());
         cursor.movePosition(QTextCursor::Right);
@@ -207,23 +211,29 @@ void ChatDialog::appendMessage(const QString &from, const QString &message)
 
 
         tableFormat.setMargin(15);
-        tableFormat.setWidth(700);
+        tableFormat.setWidth(300);
         tableFormat.setBorder(0);
 
         tableFormat.setAlignment(Qt::AlignRight);
-        tableFormat.setCellPadding(10);
+        //tableFormat.setCellPadding(10);
 
-        QTextTable *table = cursor.insertTable(1, 1, tableFormat);
+        QTextTable *table = cursor.insertTable(2, 2, tableFormat);
 
         QTextTableCell fromCell = table->cellAt(0, 0);
 
         fromCell.setFormat(nickFormat);
-        fromCell.firstCursorPosition().insertText(from + " : " +currTime + "\n" + message);
+
+        QTextTableCell msgCell = table->cellAt(1, 0);
+
+        msgCell.setFormat(msgFormat);
+
+        fromCell.firstCursorPosition().insertText(from + " : " +currTime);
+        msgCell.firstCursorPosition().insertText(message);
 
 
         QScrollBar *bar = textEdit->verticalScrollBar();
         bar->setValue(bar->maximum());
-    }else if(message == "                                                                                           Today"){
+    }else if(message == "                                                                                                                                                                                      Today"){
         QTextCharFormat nickFormat;
           nickFormat.setForeground(Qt::white);
           nickFormat.setFontWeight(QFont::Light);
@@ -251,31 +261,45 @@ void ChatDialog::appendMessage(const QString &from, const QString &message)
           bar->setValue(bar->maximum());
 }else{
         QColor ourMess(53,51,184);
+        QColor UnameColor(205, 203, 223);
+
 
         QTextCharFormat nickFormat;
-        nickFormat.setForeground(Qt::white);
-        nickFormat.setFontWeight(QFont::Bold);
+        nickFormat.setForeground(UnameColor);
+
+
+        QTextCharFormat msgFormat;
+        msgFormat.setForeground(Qt::white);
 
 
         QTextCursor cursor(textEdit->textCursor());
         cursor.movePosition(QTextCursor::Right);
 
         QTextTableFormat tableFormat;
+
+
         tableFormat.setBackground(QBrush(ourMess));
 
-        tableFormat.setMargin(10);
+
+        tableFormat.setMargin(15);
+        tableFormat.setWidth(300);
         tableFormat.setBorder(0);
-        tableFormat.setWidth(700);
-        tableFormat.setAlignment(Qt::AlignLeft);
 
+        tableFormat.setAlignment(Qt::AlignRight);
+        //tableFormat.setCellPadding(10);
 
-        QTextTable *table = cursor.insertTable(1, 1, tableFormat);
-
+        QTextTable *table = cursor.insertTable(2, 2, tableFormat);
 
         QTextTableCell fromCell = table->cellAt(0, 0);
 
         fromCell.setFormat(nickFormat);
-        fromCell.firstCursorPosition().insertText(from + " : " +currTime + "\n" + message);
+
+        QTextTableCell msgCell = table->cellAt(1, 0);
+
+        msgCell.setFormat(msgFormat);
+
+        fromCell.firstCursorPosition().insertText(from + " : " +currTime);
+        msgCell.firstCursorPosition().insertText(message);
 
 
         QScrollBar *bar = textEdit->verticalScrollBar();
@@ -289,10 +313,8 @@ void ChatDialog::appendMessage(const QString &from, const QString &message)
 
 }
 
-
 void ChatDialog::newParticipant(const QString &nick)
 {
-
     widget_3->setVisible(false);
 
     if (nick.isEmpty())
@@ -304,14 +326,24 @@ void ChatDialog::newParticipant(const QString &nick)
 
     for (int i = 0; i < listWidget->count(); ++i) {
         QListWidgetItem* currentItem = listWidget->item(i);
+
         if (currentItem->text() == nick) {
             return;
         }
     }
 
-
-
     listWidget->addItem(nick);
+
+    QString imagePath = "humans"; // Путь к папке с фото людей
+    QDir dir(imagePath);
+    QStringList imagesList = dir.entryList(QDir::Files);
+
+    if (!imagesList.isEmpty()) {
+        QString randomImage = imagesList.at(qrand() % imagesList.size());
+        QIcon icon(imagePath + "/" + randomImage);
+        listWidget->item(listWidget->count() - 1)->setIcon(icon);
+    }
+
     listWidget->setStyleSheet("font: 14pt 'Segoe UI Historic';color: #4dff00;background-color: rgb(31, 31, 31);border-radius:15px;");
 }
 
@@ -337,13 +369,6 @@ void ChatDialog::participantLeft(const QString &nick)
 }
 
 
-void ChatDialog::on_pushButton_4_clicked()
-{
-
-    view = new QWebEngineView;
-    view->load(QUrl("https://duckduckgo.com/"));
-    view->showNormal();
-}
 
 
 void ChatDialog::on_lineEdit_returnPressed()
